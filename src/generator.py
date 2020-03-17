@@ -26,9 +26,11 @@ class DataGenerator:
         self.y = tf.data.Dataset.from_tensor_slices(self.labels)
         self.step = tf.data.Dataset.from_tensor_slices(self.timeStamp)
         
-    def get_next_step(self):
-        LOGGER.info("Getting next timeStamp data")
+        # Creating iterator to get the data.
         self.data_iterator = iter(self.features)
         self.label_iterator = iter(self.y)
         self.step_iterator = iter(self.step)
+        
+    def get_next_step(self):
+        LOGGER.info("Getting next timeStamp data")
         return (next(self.data_iterator).numpy(),  next(self.label_iterator).numpy(), next(self.step_iterator).numpy())

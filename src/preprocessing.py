@@ -73,22 +73,57 @@ def merge_f_m_data(financial_df, market_df):
      returns the merged data.
     """
     market_df['Date'] = pd.to_datetime(market_df['Date'])
-    print(market_df.shape)
     columns = financial_df.columns
     transposed_df = financial_df.T
     transposed_df['Row names'] = columns
     transposed_df['Date'] = 0
-    LOGGER.info('Merging both data frames into one.')
+    date_of_solvency = financial_df['Date of Insolvency']
+    default_score = financial_df['Score'] # here 1 = Defaulted, 0 = Non-default
+    LOGGER.info('Merging market data and financial data into one.')
     
     def get_dates(x):
         # Gives date to the FY-X term. 
         for key in DATE_MAP.keys():
+            if pd.to_datetime(f'1/1/{DATE_MAP[key]}').dayofweek == 5:
+                date = f'1/3/{DATE_MAP[key]}'
+            elif pd.to_datetime(f'1/1/{DATE_MAP[key]}').dayofweek == 6:
+                date = f'1/2/{DATE_MAP[key]}'
+            else:
+                date = f'1/1/{DATE_MAP[key]}'
+            
             if x['Row names'].find(key) >= 0:
-                    x['Date'] = f'1/1/{DATE_MAP[key]}'
+                    x['Date'] = date
         return x 
            
     transposed_df = transposed_df.apply(get_dates, axis=1)
     transposed_df['Date'] = transposed_df['Date'].replace(0, '1/1/2019')
     transposed_df['Date'] = pd.to_datetime(transposed_df['Date'])
-    merged_df = transposed_df.merge(market_df, on='Date', how='outer')
-    return merged_df
+    transposed_df = transposed_df.fillna(method='bfill')
+    transposed_df = transposed_df.loc[:,~transposed_df.columns.duplicated()]
+    
+    added_cols = []
+    final_data = {}
+    for index, row in transposed_df.iterrows():
+        last_added_col = None if len(added_cols) == 0 else added_cols[-1]
+        if len(added_cols) > 0 and row['Row names'].find(last_added_col) >= 0:
+            try:
+                final_data[last_added_col].append(row[37])
+                final_data['Date'].append(row['Date'])
+            except KeyError:
+                final_data[last_added_col] = [row[37]]
+        elif len(added_cols) == 0:
+            added_cols.append(row['Row names'])
+            final_data[row['Row names']] = [row[37]]
+            final_data['Date'] = [row['Date']]
+        elif str(row['Row names']).find(added_cols[-1]) < 0:
+            added_cols.append(row['Row names'])
+            final_data[row['Row names']] = [row[37]]
+    
+    final_data['Date'] = final_data['Date'][0:15]        
+    cleaned_f_df =  pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in final_data.items() ]))
+    merged_df = market_df.merge(cleaned_f_df, on='Date', how='outer')
+    merged_df = merged_df.drop(['Identifier (RIC)', 'Company Name', 'Date of Insolvency', 'Score', 'Discrimination'], 
+                               axis=1)
+    merged_df = merged_df.sort_values(by='Date', ascending=False)
+    merged_df = merged_df.fillna(method='bfill').fillna(method='ffill')
+    return (merged_df, date_of_solvency, default_score)
