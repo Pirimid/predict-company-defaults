@@ -6,7 +6,11 @@ LOGGER = logging.getLogger()
 FORMATTER = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
 
-def setup_logger(out_file=None, stderr=True, stderr_level=logging.INFO, file_level=logging.DEBUG):
+def setup_logger(
+        out_file=None,
+        stderr=True,
+        stderr_level=logging.INFO,
+        file_level=logging.DEBUG):
     LOGGER.handlers = []
     LOGGER.setLevel(min(stderr_level, file_level))
 
