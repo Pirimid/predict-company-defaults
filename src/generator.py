@@ -8,9 +8,9 @@ class DataGenerator:
     """
      A Data generator class that will give the data to feed to network.
      Return:
-      {Data}: Feature vector
-      {Labels}: Defaulted/Non-defaulted
-      {timeStamp}: When did the default occured. If we can predict the default way ahead of time, then model will have less loss.
+      * Data: Feature vector
+      * Labels: Defaulted/Non-defaulted
+      * timeStamp: When did the default occured. If we can predict the default way ahead of time, then model will have less loss.
     """
 
     def __init__(self, data, labels, timeStamp, **kwargs):

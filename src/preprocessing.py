@@ -11,8 +11,8 @@ from src.date_map import DATE_MAP
 def clean_financial_data(df):
     """
      Cleans the data for further processing.
-      param: df - Dataframe.
-      returns: Cleaned dataframe.
+      * param: df - Dataframe.
+      * returns: Cleaned dataframe.
     """
     LOGGER.info("Cleaning the financial data.")
     df_slice = df[['Identifier (RIC)',
@@ -57,8 +57,7 @@ def read_market_data(name):
 class ProcessData:
     """
          A class to get the data for each of the company merged with the financia data and market data.
-          param: financialDf - Financial Dataframe
-          param: marketDf - Market Dataframe
+          * param: financialDf - Financial Dataframe
           returns: A dataframe using the __iter__ method and __next__method.
     """
 
@@ -71,11 +70,14 @@ class ProcessData:
         return self
 
     def __next__(self):
-        name, dataframe = next(self.groupby_iter)
-        marketData = read_market_data(name)
-        financial_data = clean_financial_data(dataframe)
-
-        return merge_f_m_data(financial_data, marketData)
+        try:
+            name, dataframe = next(self.groupby_iter)
+            marketData = read_market_data(name)
+            financial_data = clean_financial_data(dataframe)
+            return merge_f_m_data(financial_data, marketData)
+        except Exception as ex:
+            LOGGER.error(f"Error occurred. {ex}. Skipping.")
+ 
 
 
 def merge_f_m_data(financial_df, market_df):
@@ -112,24 +114,30 @@ def merge_f_m_data(financial_df, market_df):
     transposed_df['Date'] = pd.to_datetime(transposed_df['Date'])
     transposed_df = transposed_df.fillna(method='bfill')
     transposed_df = transposed_df.loc[:, ~transposed_df.columns.duplicated()]
-
+    
+    required_cols = ['Row names', 'Date']
+    transposed_df_cols = transposed_df.columns
+    for col in transposed_df_cols:
+        if col not in required_cols:
+            transposed_df.rename(columns = {col : 'Data'}, inplace=True)
+    
     added_cols = []
     final_data = {}
     for index, row in transposed_df.iterrows():
         last_added_col = None if len(added_cols) == 0 else added_cols[-1]
         if len(added_cols) > 0 and row['Row names'].find(last_added_col) >= 0:
             try:
-                final_data[last_added_col].append(row[37])
+                final_data[last_added_col].append(row['Data'])
                 final_data['Date'].append(row['Date'])
             except KeyError:
-                final_data[last_added_col] = [row[37]]
+                final_data[last_added_col] = [row['Data']]
         elif len(added_cols) == 0:
             added_cols.append(row['Row names'])
-            final_data[row['Row names']] = [row[37]]
+            final_data[row['Row names']] = [row['Data']]
             final_data['Date'] = [row['Date']]
         elif str(row['Row names']).find(added_cols[-1]) < 0:
             added_cols.append(row['Row names'])
-            final_data[row['Row names']] = [row[37]]
+            final_data[row['Row names']] = [row['Data']]
 
     final_data['Date'] = final_data['Date'][0:15]
     cleaned_f_df = pd.DataFrame(
@@ -139,7 +147,8 @@ def merge_f_m_data(financial_df, market_df):
                                 'Company Name',
                                 'Date of Insolvency',
                                 'Score',
-                                'Discrimination'],
+                                'Discrimination',
+                                'Z Score'],
                                axis=1)
     merged_df = merged_df.sort_values(by='Date', ascending=False)
     merged_df = merged_df.fillna(method='bfill').fillna(method='ffill')

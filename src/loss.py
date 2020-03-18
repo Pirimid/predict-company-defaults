@@ -18,12 +18,12 @@ def custom_loss(model, x, y, training, curr_timeStep, final_timeStep):
     This way, we can generalize for both better prediction and prediction before the actual default happens.
 
     Arguments:-
-     model: Model which is being trained.
-     x: Inputs
-     y: Outputs
-     training: Bool to indicate of training is going on.
-     curr_timeStep: Current time step.
-     final_timeStep: Time step when default happened. It will be -1 if company never went to deffault.
+     * model: Model which is being trained.
+     * x: Inputs
+     * y: Outputs
+     * training: Bool to indicate of training is going on.
+     * curr_timeStep: Current time step.
+     * final_timeStep: Time step when default happened. It will be -1 if company never went to deffault.
 
     Returns the final loss computed. For time being, final loss is one third of classifcation loss and two third of regression loss.
     """
@@ -51,12 +51,12 @@ def grad(model, inputs, targets, curr_timeStep, final_timeStep):
      A gradient tape for watching the gradients of the loss to optimize the model parametres.
 
      Arguments:-
-     model: Model which is being trained.
-     inputs: Inputs
-     targets: Outputs
-     training: Bool to indicate of training is going on.
-     curr_timeStep: Current time step.
-     final_timeStep: Time step when default happened. It will be -1 if company never went to deffault.
+     * model: Model which is being trained.
+     * inputs: Inputs
+     * targets: Outputs
+     * training: Bool to indicate of training is going on.
+     * curr_timeStep: Current time step.
+     * final_timeStep: Time step when default happened. It will be -1 if company never went to deffault.
 
     Returns the final loss computed and gradients computed.
     """
