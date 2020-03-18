@@ -14,7 +14,7 @@ class BaseModel(abc.ABC):
         self.output_shape = output_shape
     
     @abc.abstractmethod    
-    def __create_model(self):
+    def create_model(self):
         pass
     
     @abc.abstractmethod
@@ -36,22 +36,17 @@ class LSTMModel(BaseModel):
         # model initialization
         self.model = None
         
-    def __create_model(self):
+    def create_model(self):
         
         inputs = tf.keras.Input(shape=self.input_shape)
         
         x = LSTM(32, activation='relu')(inputs)
-        x = LSTM(32, activation='relu')(x)
+        # x = LSTM(32, activation='relu')(x)
         
         x = Flatten()(x)
         x = Dense(32, activation='relu')(x)
         output = Dense(self.output_shape, activation='sigmoid')(x)
         
         self.model = Model(inputs= inputs, outputs= output)
+        return self.model
     
-    def compile(self, **kwargs):
-        return self.model.compile(**kwargs)
-        
-        
-        
-        
