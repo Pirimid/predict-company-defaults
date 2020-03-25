@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 # classification loss object to calculate the classification loss.
-classification_loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
+classification_loss_object = tf.keras.losses.BinaryCrossentropy(
     from_logits=True)
 
 # Regression loss object to calculate the regression loss.
@@ -37,12 +37,13 @@ def custom_loss(model, x, y, training, curr_timeStep, final_timeStep):
     # weightage we should give both losses.
     if final_timeStep > -1:
         final_loss = cls_loss
-        return final_loss.numpy()
+        return final_loss
     else:
         # Compute the regression loss.
-        reg_loss = -regression_loss_object(final_timeStep, curr_timeStep)
-        final_loss = ((1 / 3) * cls_loss.numpy()) + \
-            ((2 / 3) * reg_loss.numpy())
+        reg_loss = -regression_loss_object(tf.Variable(final_timeStep, dtype=tf.float32), 
+                                           tf.Variable(curr_timeStep, dtype=tf.float32))
+        final_loss = ((1 / 3) * cls_loss) + \
+            ((2 / 3) * reg_loss)
         return final_loss
 
 

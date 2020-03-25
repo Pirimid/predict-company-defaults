@@ -1,6 +1,7 @@
 # custom
 data/
 .vscode
+src/unwanted.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

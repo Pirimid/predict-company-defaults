@@ -17,9 +17,9 @@ class BaseModel(abc.ABC):
     def create_model(self):
         pass
     
-    @abc.abstractmethod
-    def compile(self, **kwargs):
-        pass
+    # @abc.abstractmethod
+    # def compile(self, **kwargs):
+    #     pass
     
     
 class LSTMModel(BaseModel):
