@@ -31,9 +31,11 @@ class DataGenerator:
         self.data_iterator = iter(self.features)
         self.label_iterator = iter(self.y)
         self.step_iterator = iter(self.step)
+    
+    def __len__(self):
+        return len(self.labels)
 
     def get_next_step(self):
-        LOGGER.info("Getting next timeStamp data")
         return (
             next(
                 self.data_iterator).numpy(), next(
