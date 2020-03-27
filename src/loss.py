@@ -7,7 +7,7 @@ classification_loss_object = tf.keras.losses.BinaryCrossentropy(
 
 # Regression loss object to calculate the regression loss.
 # TODO: Change the loss as per the experimental results.
-regression_loss_object = tf.keras.losses.MSLE
+regression_loss_object = tf.keras.losses.MeanSquaredError()
 
 
 def custom_loss(model, x, y, training, curr_timeStep, final_timeStep):
@@ -33,17 +33,17 @@ def custom_loss(model, x, y, training, curr_timeStep, final_timeStep):
     y_ = model(x, training=training)
     cls_loss = classification_loss_object(y_true=y, y_pred=y_)
 
-    # 3. Based on whether the company went default or not decide how much
+    # 2. Based on whether the company went default or not decide how much
     # weightage we should give both losses.
-    if final_timeStep > -1:
-        final_loss = cls_loss
-        return final_loss
-    else:
+    if int(final_timeStep[0][0]) > -1:
         # Compute the regression loss.
-        reg_loss = -regression_loss_object(tf.Variable(final_timeStep, dtype=tf.float32), 
+        reg_loss = regression_loss_object(tf.Variable(final_timeStep, dtype=tf.float32), 
                                            tf.Variable(curr_timeStep, dtype=tf.float32))
         final_loss = ((1 / 3) * cls_loss) + \
             ((2 / 3) * reg_loss)
+        return final_loss
+    else:
+        final_loss = cls_loss
         return final_loss
 
 
