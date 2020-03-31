@@ -153,3 +153,14 @@ def merge_f_m_data(financial_df, market_df):
     merged_df = merged_df.sort_values(by='Date', ascending=False)
     merged_df = merged_df.fillna(method='bfill').fillna(method='ffill')
     return (merged_df, date_of_solvency, default_score)
+
+
+def prepare_lstm_data(normalized_data):
+    length = len(normalized_data)
+    lstm_data = []
+    
+    for i in range(5, length):
+        data_slice = normalized_data[i-5:i]
+        lstm_data.append(data_slice)
+        
+    return np.array(lstm_data)
