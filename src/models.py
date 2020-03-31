@@ -40,11 +40,38 @@ class LSTMModel(BaseModel):
         
         inputs = tf.keras.Input(shape=self.input_shape)
         
-        x = LSTM(32, activation='relu')(inputs)
-        # x = LSTM(32, activation='relu')(x)
+        x = LSTM(64, activation='relu', return_sequences=True)(inputs)
+        x = LSTM(64, activation='relu')(x)
         
         x = Flatten()(x)
-        x = Dense(32, activation='relu')(x)
+        x = Dense(32, activation='elu')(x)
+        x = Dense(32, activation='elu')(x)
+        output = Dense(self.output_shape, activation='sigmoid')(x)
+        
+        self.model = Model(inputs= inputs, outputs= output)
+        return self.model
+    
+class DenseModel(BaseModel):
+    """ 
+     A dense model class. 
+     Arguments:
+      * input_shape: Shape of the input tensor.
+      * output_shape: Shape of the output tensor.
+    """
+    def __init__(self, input_shape, output_shape, *args, **kwargs):
+        self.input_shape = input_shape
+        self.output_shape = output_shape
+        
+        # model initialization
+        self.model = None
+    
+    def create_model(self):
+        
+        inputs = tf.keras.Input(shape=self.input_shape)
+        
+        x = Dense(64, activation='elu')(inputs)
+        x = Dense(32, activation='elu')(x)
+        x = Dense(16, activation='elu')(x)
         output = Dense(self.output_shape, activation='sigmoid')(x)
         
         self.model = Model(inputs= inputs, outputs= output)
