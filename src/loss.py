@@ -35,16 +35,16 @@ def custom_loss(model, x, y, training, curr_timeStep, final_timeStep):
 
     # 2. Based on whether the company went default or not decide how much
     # weightage we should give both losses.
-    if int(final_timeStep[0][0]) > -1:
-        # Compute the regression loss.
-        reg_loss = regression_loss_object(tf.Variable(final_timeStep, dtype=tf.float32), 
-                                           tf.Variable(curr_timeStep, dtype=tf.float32))
-        final_loss = ((1 / 3) * cls_loss) + \
-            ((2 / 3) * reg_loss)
-        return final_loss
-    else:
-        final_loss = cls_loss
-        return final_loss
+    # if int(final_timeStep[0][0]) > -1:
+    #     # Compute the regression loss.
+    #     reg_loss = regression_loss_object(tf.Variable(final_timeStep, dtype=tf.float32), 
+    #                                        tf.Variable(curr_timeStep, dtype=tf.float32))
+    #     final_loss = ((1 / 3) * cls_loss) + \
+    #         ((2 / 3) * reg_loss)
+    #     return final_loss
+    # else:
+    final_loss = cls_loss
+    return final_loss
 
 
 def grad(model, inputs, targets, curr_timeStep, final_timeStep):
