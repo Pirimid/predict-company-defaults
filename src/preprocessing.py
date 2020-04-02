@@ -155,12 +155,12 @@ def merge_f_m_data(financial_df, market_df):
     return (merged_df, date_of_solvency, default_score)
 
 
-def prepare_lstm_data(normalized_data):
+def prepare_lstm_data(normalized_data, time_window):
     length = len(normalized_data)
     lstm_data = []
     
-    for i in range(5, length):
-        data_slice = normalized_data[i-5:i]
+    for i in range(time_window, length):
+        data_slice = normalized_data[i-time_window:i]
         lstm_data.append(data_slice)
         
     return np.array(lstm_data)
