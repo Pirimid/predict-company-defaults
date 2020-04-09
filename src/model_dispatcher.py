@@ -1,11 +1,10 @@
 # A simple dispatcher which will dispatch the defined models.
 
-from src.models import LSTMModel
-from src.models import DenseModel
-from src.models import BiLSTMModel
+from src.models import LSTMModel, DenseModel, BiLSTMModel, waveNet
 
 MODEL_DISPATCHER = {
     'LSTM': LSTMModel,
     'Dense': DenseModel,
-    'BiLSTM': BiLSTMModel
+    'BiLSTM': BiLSTMModel,
+    'waveNet': waveNet
 }
