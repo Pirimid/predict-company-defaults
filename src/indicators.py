@@ -13,7 +13,9 @@ def enrich_data(data):
     """
     LOGGER.info("Adding TA-Lib indicators as features...")
     # We specifically do shifting here so that all additional data represents information about past history.
-    return pd.concat((data, get_indicators(data).shift(), get_price_patterns(data).shift()), axis=1)
+    df = pd.concat((data, get_indicators(data).shift(), get_price_patterns(data).shift()), axis=1)
+    df = df.fillna(method='ffill')
+    return df.dropna()
 
 
 def get_indicators(data, intervals=(5, 10, 20, 50, 100)):

@@ -94,8 +94,6 @@ def trainer(model,
             solvency_date = d[1] # multiply by len to create tensors of equal length for training.
             final_timeStep = d[2] * len(dataframe) # multiply by len to create tensors of equal length for training.
             score = d[3] * len(dataframe)
-            LOGGER.info(f"Total length of training data is {len(dataframe)}")
-            LOGGER.info(f"Score : {d[3]}")
 
             dataframe = dataframe.drop('Date', axis=1)
             # to use in creating float from strings.
@@ -113,12 +111,18 @@ def trainer(model,
             dataframe = dataframe.astype(np.float32)
             dataframe = dataframe.drop('index', axis=1)
             dataframe = enrich_data(dataframe)
-            normalized_data = scaler.fit_transform(dataframe.values)
-            lstm_data = prepare_lstm_data(normalized_data, time_window)
-
-            LOGGER.info("Starting training...")
-            model.fit(lstm_data, np.array(
-                score[:-time_window]), epochs=epochs, batch_size=32, verbose=2)
+            if dataframe.shape[0] != 0:
+                LOGGER.info(f"Total length of training data is {len(dataframe)}")
+                LOGGER.info(f"Score : {d[3]}")
+                normalized_data = scaler.fit_transform(dataframe.values)
+                lstm_data = prepare_lstm_data(normalized_data, time_window)
+                
+                if len(lstm_data.shape) == 3:
+                    LOGGER.info("Starting training...")
+                    model.fit(lstm_data, np.array(
+                        score[:lstm_data.shape[0]]), epochs=epochs, batch_size=32, verbose=2)
+            else:
+                LOGGER.info("Empty dataset after dropping NaNs, skipping...")
 
     if save_model and (mode == 'train_test' or mode == 'train'):
         LOGGER.info("Saving the model now...")
@@ -161,15 +165,19 @@ def trainer(model,
             dataframe = dataframe.astype(np.float32)
             dataframe = dataframe.drop('index', axis=1)
             dataframe = enrich_data(dataframe)
-            normalized_data = scaler.fit_transform(dataframe.values)
+            if dataframe.shape[0] != 0:
+                normalized_data = scaler.fit_transform(dataframe.values)
 
-            lstm_data = prepare_lstm_data(normalized_data, time_window)
-
-            preds = model.predict(lstm_data, batch_size=32)
-            LOGGER.info(
-                f"Accuracy : {accuracy_score(np.array(score[:-time_window]).reshape(-1,1), preds.round())}")
-            true_labels.extend(np.array(score[:-time_window]).reshape(-1, 1))
-            predictions.extend(preds.round())
+                lstm_data = prepare_lstm_data(normalized_data, time_window)
+                
+                if len(lstm_data.shape) == 3:
+                    preds = model.predict(lstm_data, batch_size=32)
+                    LOGGER.info(
+                        f"Accuracy : {accuracy_score(np.array(score[:lstm_data.shape[0]]).reshape(-1,1), preds.round())}")
+                    true_labels.extend(np.array(score[:lstm_data.shape[0]]).reshape(-1, 1))
+                    predictions.extend(preds.round())
+            else:
+                pass
 
         LOGGER.info(
             f"Overall accuracy on testing set : {accuracy_score(true_labels, predictions)}")
