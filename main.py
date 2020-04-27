@@ -47,10 +47,11 @@ def trainer(model,
             test_size=0.2,
             save_model=False,
             mode='train_test',
-            plot_his=False,
-            base_name='baseline'):
+            plot_his=True,
+            base_name='baseline',
+            name='image'):
     """
-     Main train function. 
+     Main train function.
 
       Arguments:-
       * model_name:- Name of the model from config
@@ -73,7 +74,7 @@ def trainer(model,
 
     LOGGER.info(f"Training with time window of {time_window}...")
 
-    final_train_loss_his, final_train_acc_his = [], []
+    final_train_loss_his, final_train_acc_his, final_test_acc_his = [], [], []
 
     # keys
     # keys = list(train_data.keys())
@@ -116,11 +117,13 @@ def trainer(model,
                 LOGGER.info(f"Score : {d[3]}")
                 normalized_data = scaler.fit_transform(dataframe.values)
                 lstm_data = prepare_lstm_data(normalized_data, time_window)
-                
+
                 if len(lstm_data.shape) == 3:
                     LOGGER.info("Starting training...")
-                    model.fit(lstm_data, np.array(
+                    history = model.fit(lstm_data, np.array(
                         score[:lstm_data.shape[0]]), epochs=epochs, batch_size=32, verbose=2)
+                    final_train_acc_his.append(history.history['accuracy'])
+                    final_train_loss_his.append(history.history['loss'])
             else:
                 LOGGER.info("Empty dataset after dropping NaNs, skipping...")
 
@@ -169,9 +172,11 @@ def trainer(model,
                 normalized_data = scaler.fit_transform(dataframe.values)
 
                 lstm_data = prepare_lstm_data(normalized_data, time_window)
-                
+
                 if len(lstm_data.shape) == 3:
                     preds = model.predict(lstm_data, batch_size=32)
+                    acc_score = accuracy_score(np.array(score[:lstm_data.shape[0]]).reshape(-1,1), preds.round())
+                    final_test_acc_his.append(acc_score)
                     LOGGER.info(
                         f"Accuracy : {accuracy_score(np.array(score[:lstm_data.shape[0]]).reshape(-1,1), preds.round())}")
                     true_labels.extend(np.array(score[:lstm_data.shape[0]]).reshape(-1, 1))
@@ -183,7 +188,9 @@ def trainer(model,
             f"Overall accuracy on testing set : {accuracy_score(true_labels, predictions)}")
 
     if plot_his:
-        plot_session(final_train_loss_his, final_train_acc_his)
+        plot_session(final_train_loss_his, final_train_acc_his, save=True, name=name)
+        LOGGER.info("Plotting test data accuracy...")
+        plot_session([], final_test_acc_his)
 
 
 if __name__ == "__main__":
@@ -202,6 +209,7 @@ if __name__ == "__main__":
     model.compile(optimizer=config['optimizer'],
                   loss='binary_crossentropy', metrics=['accuracy'])
 
+    fold = 0
     for train_idx, valid_idx in skf.split(X=df['Keys'], y=df['Scores']):
         train_df = df.loc[train_idx]
         valid_df = df.loc[valid_idx]
@@ -215,7 +223,8 @@ if __name__ == "__main__":
                 mode=config['mode'],
                 base_name=config['base_name'],
                 time_window=config['time_window'],
-                epochs=config['epochs']
+                epochs=config['epochs'],
+                name=f'training_fold{fold}'
                 )
-
+        fold += 1
     # model.save('data/biLstm_5_folds_std_scaler.h5')
