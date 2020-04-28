@@ -15,7 +15,7 @@ from src.model_dispatcher import MODEL_DISPATCHER
 from src.loss import grad
 from src.date_map import get_next_day
 from src.trainer import train
-from src.plot_training_session import plot_session
+from src.plot_training_session import plot_session, plot_test_accuracy
 from src.indicators import enrich_data
 
 LOGGER = setup_logger()  # set up the logger.
@@ -49,7 +49,8 @@ def trainer(model,
             mode='train_test',
             plot_his=True,
             base_name='baseline',
-            name='image'):
+            name='image',
+            fold=0):
     """
      Main train function.
 
@@ -190,7 +191,7 @@ def trainer(model,
     if plot_his:
         plot_session(final_train_loss_his, final_train_acc_his, save=True, name=name)
         LOGGER.info("Plotting test data accuracy...")
-        plot_session([], final_test_acc_his)
+        plot_test_accuracy(final_test_acc_his, save=True, name=f'test_fold{fold}')
 
 
 if __name__ == "__main__":
@@ -224,7 +225,8 @@ if __name__ == "__main__":
                 base_name=config['base_name'],
                 time_window=config['time_window'],
                 epochs=config['epochs'],
-                name=f'training_fold{fold}'
+                name=f'training_fold{fold}',
+                fold=fold
                 )
         fold += 1
     # model.save('data/biLstm_5_folds_std_scaler.h5')
