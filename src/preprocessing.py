@@ -74,7 +74,7 @@ class ProcessData:
             name, dataframe = next(self.groupby_iter)
             marketData = read_market_data(name)
             financial_data = clean_financial_data(dataframe)
-            return merge_f_m_data(financial_data, marketData)
+            return merge_f_m_data(financial_data, marketData), name
         except Exception as ex:
             LOGGER.error(f"Error occurred. {ex}. Skipping.")
  

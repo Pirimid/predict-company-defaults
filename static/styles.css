@@ -1,0 +1,63 @@
+.categorizationInputs {
+    background: #e9f3f3;
+    margin: 5px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+}
+
+.input {
+    width: 500px;
+    display: inline-block;
+}
+
+.value {
+    width: 500px;
+    display: inline-block;
+}
+
+.label {
+    width: 200px;
+    display: inline-block;
+}
+
+.clearfix {
+    padding: 5px;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+body {
+    background: rgb(5, 6, 37);
+}
+
+.card-body {
+    background: rgb(16, 16, 17);
+    color: white
+}
+
+.card-title {
+    font-size: 28px;
+}
+
+.card-header {
+    border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+    color: #f8f9fa;
+    background: black;
+}
+
+/* .clearfix.form-group.button-class {
+    display: inline-block;
+    width: 49%;
+}
+
+.clearfix.form-group {
+    display: inline-block;
+    width: 50%;
+} */

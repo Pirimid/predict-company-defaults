@@ -86,7 +86,7 @@ class DenseModel(BaseModel):
 class BiLSTMModel(BaseModel):
     """
      Bidirectional LSTM model class to create model.
-     
+
      Arguments:
       * input_shape: Shape of the input tensor.
       * output_shape: Shape of the output tensor. 
@@ -120,27 +120,26 @@ class BiLSTMModel(BaseModel):
 
 
 class waveNet(BaseModel):
-    """Wave Net model class. 
-    
+    """Wave Net model class.
+
     Arguments:
       * input_shape: Shape of the input tensor.
       * output_shape: Shape of the output tensor.
     """
 
     def __init__(self, input_shape, output_shape, *args, **kwargs):
-        super(waveNet, self).__init__()
-        # Config will have all differnet configuration that will be needed in order to create models and train them.
         self.input_shape = input_shape
         self.output_shape = output_shape
 
     def create_model(self):
         inp = Input(shape=(self.input_shape))
-        x = self.wave_block(inp, 16, 3, 8)
-        x = self.wave_block(x,  32, 3, 5)
-        x = self.wave_block(x,  64, 3, 3)
-        x = self.wave_block(x, 128, 3, 1)
+        x = self.wave_block(inp, 16, 3, 5)
+        # x = self.wave_block(x,  32, 3, 5)
+        # x = self.wave_block(x,  64, 3, 3)
+        # x = self.wave_block(x, 128, 3, 1)
 
-        out = Dense(self.output_shape, activation='softmax', name='out')(x)
+        x = Flatten()(x)
+        out = Dense(self.output_shape, activation='sigmoid', name='out')(x)
 
         model = Model(inputs=inp, outputs=out)
 
@@ -169,5 +168,5 @@ class waveNet(BaseModel):
                        padding='same')(x)
 
             res_x = Add()([res_x, x])
-            
+
         return res_x

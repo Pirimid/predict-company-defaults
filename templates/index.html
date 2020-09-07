@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+
+<body>
+    <div id="categorizationInputs" class="categorizationInputs">
+        <div class="card">
+            <!-- <div class="card-header">Transaction Detail</div> -->
+
+            <div class="card-body">
+                <div class="card-title ">Company Default Score</div>
+                <form onsubmit="submitForm(event);" class="">
+                    <div class="clearfix form-group">
+                        <label for="company_name" class="label">Name of the Company</label>
+                        <input type="textarea" id="company_name" class="input" />
+                    </div>
+                    <div class="clearfix form-group">
+                        <button type="submit" id="predict" class="input btn">Give Score</button>
+                    </div>
+                </form>
+
+                <div class="card mb-3" >
+                    <div class="card-header">Results</div>
+                    <div class="card-body">
+                        <!-- <h5 class="card-title">Results</h5> -->
+                        <div class="clearfix form-group">
+                            <label class="label">Score Predicted :</label>
+                            <label type="textarea" id="score" class="value" ></label>
+                        </div>
+                        <div class="clearfix form-group">
+                            <label class="label">Probability of Default :</label>
+                            <label type="textarea" id="probability" class="value" ></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+
+
+    <script src="../static/predict.js"></script>
+</body>
