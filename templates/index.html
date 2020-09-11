@@ -16,27 +16,27 @@
             <!-- <div class="card-header">Transaction Detail</div> -->
 
             <div class="card-body">
-                <div class="card-title ">Company Default Score</div>
+                <div class="card-title ">Company Default Prediction</div>
                 <form onsubmit="submitForm(event);" class="">
                     <div class="clearfix form-group">
-                        <label for="company_name" class="label">Name of the Company</label>
+                        <label for="company_name" class="label name">Company Name</label>
                         <input type="textarea" id="company_name" class="input" />
                     </div>
                     <div class="clearfix form-group">
-                        <button type="submit" id="predict" class="input btn">Give Score</button>
+                        <button type="submit" id="predict" class="input btn">Predict</button>
                     </div>
                 </form>
 
                 <div class="card mb-3" >
-                    <div class="card-header">Results</div>
+                    <div class="card-header">Prediction</div>
                     <div class="card-body">
                         <!-- <h5 class="card-title">Results</h5> -->
-                        <div class="clearfix form-group">
-                            <label class="label">Score Predicted :</label>
+                        <div class="clearfix form-group scoreContainer">
+                            <label class="label score">Score (0-100) :</label>
                             <label type="textarea" id="score" class="value" ></label>
                         </div>
                         <div class="clearfix form-group">
-                            <label class="label">Probability of Default :</label>
+                            <label class="label probability">Probability :</label>
                             <label type="textarea" id="probability" class="value" ></label>
                         </div>
                     </div>

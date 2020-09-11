@@ -9,22 +9,18 @@
 }
 
 .input {
-    width: 500px;
+    width: 335px;
     display: inline-block;
 }
 
 .value {
-    width: 500px;
-    display: inline-block;
-}
-
-.label {
-    width: 200px;
+    width: 100px;
     display: inline-block;
 }
 
 .clearfix {
     padding: 5px;
+    display: inline-block;
 }
 
 .clearfix::after {
@@ -52,12 +48,16 @@ body {
     background: black;
 }
 
-/* .clearfix.form-group.button-class {
-    display: inline-block;
-    width: 49%;
+.label.name {
+    width: 122px;
+    display: inline-grid;
 }
 
-.clearfix.form-group {
+.input.btn {
+    width: 178px;
     display: inline-block;
-    width: 50%;
-} */
+}
+
+.scoreContainer {
+    width:50%;
+}
